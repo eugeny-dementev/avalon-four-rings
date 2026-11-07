@@ -7,7 +7,7 @@ The additional controls sit below the original ring controls, beside the boots c
 Other builds, including 1.31, and IL2CPP are unsupported.
 The mod checks the original game assembly fingerprint before patching it in memory.
 
-[Download the release](https://github.com/eugeny-dementev/avalon-four-rings/releases/latest) · [Report a bug](https://github.com/eugeny-dementev/avalon-four-rings/issues/new/choose)
+[Download the release](https://github.com/eugeny-dementev/avalon-four-rings/releases/latest) · [Nexus Mods](https://www.nexusmods.com/taintedgrailthefallofavalon/mods/391) · [Report a bug](https://github.com/eugeny-dementev/avalon-four-rings/issues/new/choose)
 
 ![Four occupied ring slots in the native equipment diagram](docs/images/four-rings-cover.png)
 
