@@ -1,0 +1,41 @@
+Four Rings - Mono 1.0.0
+
+Four active ring slots in Tainted Grail: The Fall of Avalon.
+Supports only the verified Windows x64 Mono 1.30.012 build.
+Requires BepInEx 5 x64; tested with 5.4.23.6.
+Better UI and Avalon Mod Manager are optional.
+Other builds, including 1.31, and IL2CPP are unsupported.
+
+Required TG.Main.dll SHA-256:
+57E9FBE5659B25539FDCF1A734F0C5CDE277FEDF36EEA6FEACB237855C69EE2A
+
+INSTALL
+1. Exit the game and back up your complete save profile.
+2. Install BepInEx 5 x64 for the Mono branch.
+3. Extract this ZIP beside Fall of Avalon.exe.
+4. Check both DLL locations:
+   BepInEx/patchers/FourRings/FourRings.Patcher.dll
+   BepInEx/plugins/FourRings/FourRings.Plugin.dll
+5. Start the game and open the equipment diagram.
+
+REMOVE
+1. Keep both DLLs installed while loading your save.
+2. Unequip both additional ring slots.
+3. Create a manual save and exit completely.
+4. Remove both Four Rings DLLs.
+5. Load the cleaned manual save.
+
+Older saves containing equipped additional slots still require the mod.
+Do not bypass the fingerprint check after a game update.
+Original game DLLs remain unchanged; the patcher modifies memory only.
+Physical gamepad input, merchant transactions, and combat-triggered ring effects remain unverified.
+Manual installation is verified. Vortex installation is unverified.
+
+Source, documentation, and releases:
+https://github.com/eugeny-dementev/avalon-four-rings
+Bug reports:
+https://github.com/eugeny-dementev/avalon-four-rings/issues
+
+AI disclosure: OpenAI Codex generated the original code, tests, build scripts,
+and documentation from user requirements. See the repository for verification details.
+Original code: MIT license. Game assets and external dependencies retain their own rights.

@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+artifacts/
+.vs/
+.idea/
+*.user
+*.suo
+*.dll
+*.exe
+*.pdb
+*.zip
+*.7z
+*.log
+test-session.active
+command.txt

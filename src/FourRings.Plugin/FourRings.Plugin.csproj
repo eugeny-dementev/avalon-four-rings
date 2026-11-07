@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <GameLibrary Include="$(GameRoot)/Fall of Avalon_Data/Managed/TG.Main.dll;$(GameRoot)/Fall of Avalon_Data/Managed/Awaken.Utility.dll;$(GameRoot)/Fall of Avalon_Data/Managed/UnityEngine.CoreModule.dll;$(GameRoot)/Fall of Avalon_Data/Managed/UnityEngine.dll;$(GameRoot)/Fall of Avalon_Data/Managed/UnityEngine.UI.dll;$(GameRoot)/Fall of Avalon_Data/Managed/UnityEngine.UIModule.dll;$(GameRoot)/Fall of Avalon_Data/Managed/UnityEngine.InputLegacyModule.dll;$(GameRoot)/Fall of Avalon_Data/Managed/UniTask.dll" />
+    <GameLibrary Include="$(GameRoot)/BepInEx/core/BepInEx.dll;$(GameRoot)/BepInEx/core/0Harmony.dll" />
+    <GameLibrary Include="$(GameRoot)/Fall of Avalon_Data/Managed/Rewired_Core.dll;$(GameRoot)/Fall of Avalon_Data/Managed/Unity.VisualScripting.Core.dll;$(GameRoot)/Fall of Avalon_Data/Managed/Unity.VisualScripting.Flow.dll" Condition="'$(IncludeHarness)' == 'true'" />
+    <Reference Include="@(GameLibrary)"><HintPath>%(Identity)</HintPath><Private>false</Private><ExternallyResolved>true</ExternallyResolved></Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(IncludeHarness)' == 'true'">
+    <Compile Include="../../tests/RuntimeHarness/Harness.cs" />
+  </ItemGroup>
+</Project>

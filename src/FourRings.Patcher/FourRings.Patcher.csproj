@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Reference Include="Mono.Cecil"><HintPath>$(GameRoot)/BepInEx/core/Mono.Cecil.dll</HintPath><Private>false</Private><ExternallyResolved>true</ExternallyResolved></Reference>
+    <Reference Include="BepInEx"><HintPath>$(GameRoot)/BepInEx/core/BepInEx.dll</HintPath><Private>false</Private><ExternallyResolved>true</ExternallyResolved></Reference>
+  </ItemGroup>
+</Project>

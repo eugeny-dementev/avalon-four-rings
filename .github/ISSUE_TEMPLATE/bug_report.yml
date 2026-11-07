@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a Four Rings problem on the supported Mono build.
+body:
+  - type: markdown
+    attributes:
+      value: Back up your saves. Remove personal paths, account identifiers, and unrelated details from logs. Do not upload saves or game DLLs.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Four Rings version, game version, Mono branch, and BepInEx version.
+    validations:
+      required: true
+  - type: input
+    id: fingerprint
+    attributes:
+      label: TG.Main.dll SHA-256
+      description: Include this if the patcher reports an unsupported build.
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps and result
+      description: Describe the steps, expected behavior, and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Other mods and controls
+      description: Include Better UI settings, display resolution, and mouse, keyboard, or controller use.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log excerpt
+      description: Paste relevant BepInEx or game errors after removing personal information.
+      render: text
