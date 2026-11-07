@@ -9,6 +9,11 @@ The mod checks the original game assembly fingerprint before patching it in memo
 
 [Download the release](https://github.com/eugeny-dementev/avalon-four-rings/releases/latest) · [Report a bug](https://github.com/eugeny-dementev/avalon-four-rings/issues/new/choose)
 
+![Four occupied ring slots in the native equipment diagram](docs/images/four-rings-cover.png)
+
+Actual gameplay capture from a disposable test profile. Better UI is a separate installed mod.
+See the [complete inventory](docs/images/inventory-overview.png) and [additional-slot tooltip](docs/images/ring-interaction.png).
+
 ## Requirements
 
 - Windows x64 and the supported Mono game installation.

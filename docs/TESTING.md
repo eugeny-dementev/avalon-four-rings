@@ -44,3 +44,26 @@ The test rings were Lesser Health Ring, Athlete's Pride, Lesser Mana Ring, and a
 
 The release plugin excludes the runtime harness. Source for the harness is provided for reproducibility, not normal play.
 See [harness instructions](../tests/RuntimeHarness/README.md) before using it.
+
+## Release package check
+
+The public source built from a clean checkout with zero warnings and errors.
+Static checks passed, including the assertion that the normal plugin contains no harness type.
+The separate, explicitly enabled harness build also compiled successfully.
+
+The install ZIP contains exactly two mod DLLs, installation instructions, the MIT license, and the changelog.
+Archive entries matched their build inputs by SHA-256.
+The packaged DLLs loaded the archived disposable checkpoint with four occupied ring controls.
+Opening an additional slot displayed the native ring chooser.
+Returning displayed its native tooltip, including Athlete's Pride and its maximum stamina bonus.
+Reopening the inventory retained exactly four ring controls.
+No Four Rings exception appeared during this package check.
+
+Three actual gameplay images document the package check.
+The cover is a direct crop of the complete inventory capture.
+Better UI was installed separately; its settings remained unchanged.
+These images show the archived capture setup, separately from the controlled stat matrix above.
+
+After capture, the game was closed and the current player profile was restored.
+All 23 profile files matched the fresh backup by file name, length, and SHA-256.
+No capture progress or temporary test items were merged into the restored profile.
