@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 if (-not $OutputDirectory) { $OutputDirectory = Join-Path $repoRoot 'artifacts' }
 $output = [IO.Path]::GetFullPath($OutputDirectory)
-$archive = Join-Path $output 'FourRings-1.0.0-Mono.zip'
+$archive = Join-Path $output 'FourRings-1.0.1-Mono.zip'
 $checksum = Join-Path $output 'SHA256SUMS.txt'
 if ((Test-Path -LiteralPath $archive) -or (Test-Path -LiteralPath $checksum)) { throw 'Release output already exists. Select a new output directory.' }
 & (Join-Path $PSScriptRoot 'build.ps1') -GameDirectory $GameDirectory -DotnetPath $DotnetPath
@@ -27,7 +27,8 @@ try {
     try {
         foreach ($name in $files.Keys) {
             $entry = $zip.CreateEntry($name, [IO.Compression.CompressionLevel]::Optimal)
-            $entry.LastWriteTime = [DateTimeOffset]::new(2026, 11, 7, 0, 0, 0, [TimeSpan]::Zero)
+            # Each release needs a distinct timestamp so BepInEx refreshes its cached plugin metadata.
+            $entry.LastWriteTime = [DateTimeOffset]::new(2026, 11, 7, 0, 0, 2, [TimeSpan]::Zero)
             $entryStream = $entry.Open()
             try {
                 $bytes = [IO.File]::ReadAllBytes((Join-Path $repoRoot $files[$name]))
@@ -48,6 +49,6 @@ try {
     }
 } finally { $check.Dispose() }
 $hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
-[IO.File]::WriteAllText($checksum, "$hash  FourRings-1.0.0-Mono.zip`n", [Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText($checksum, "$hash  FourRings-1.0.1-Mono.zip`n", [Text.UTF8Encoding]::new($false))
 "Validated release archive: $archive"
 "SHA-256: $hash"

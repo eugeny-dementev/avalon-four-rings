@@ -3,30 +3,28 @@
 Equip four rings in the existing equipment diagram in **Tainted Grail: The Fall of Avalon**.
 The additional controls sit below the original ring controls, beside the boots control.
 
-**Version 1.0.0 supports only the verified 1.30.012 Mono build.**
-Other builds, including 1.31, and IL2CPP are unsupported.
-The mod checks the original game assembly fingerprint before patching it in memory.
+**Version 1.0.1 is tested on Mono 1.30.012. Other Mono builds are allowed but unverified.**
+An unknown game assembly fingerprint produces a warning, not a version block.
+Structural checks remain enabled and reject incompatible equipment layouts. IL2CPP is unsupported.
 
 [Download the release](https://github.com/eugeny-dementev/avalon-four-rings/releases/latest) · [Nexus Mods](https://www.nexusmods.com/taintedgrailthefallofavalon/mods/391) · [Report a bug](https://github.com/eugeny-dementev/avalon-four-rings/issues/new/choose)
 
 ![Four occupied ring slots in the native equipment diagram](docs/images/four-rings-cover.png)
 
-Actual gameplay capture from a disposable test profile. Better UI is a separate installed mod.
+Actual gameplay capture from a disposable test profile. Inventory appearance includes separate UI customizations.
 See the [complete inventory](docs/images/inventory-overview.png) and [additional-slot tooltip](docs/images/ring-interaction.png).
 
 ## Requirements
 
-- Windows x64 and the supported Mono game installation.
+- Windows x64 and a Mono game installation.
 - [BepInEx 5 x64](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.6), tested with 5.4.23.6.
-- Original `Fall of Avalon_Data/Managed/TG.Main.dll` SHA-256:
+- Tested `Fall of Avalon_Data/Managed/TG.Main.dll` SHA-256, for reference only:
 
 ```text
 57E9FBE5659B25539FDCF1A734F0C5CDE277FEDF36EEA6FEACB237855C69EE2A
 ```
 
-[Better UI](https://www.nexusmods.com/taintedgrailthefallofavalon/mods/111) and
-[Avalon Mod Manager](https://www.nexusmods.com/taintedgrailthefallofavalon/mods/90) are optional.
-Tests used Better UI 1.0.4 with extra loadout pages disabled.
+No other mod or mod manager is required.
 
 ## Installation
 
@@ -43,6 +41,7 @@ BepInEx/plugins/FourRings/FourRings.Plugin.dll
 5. Start the game and open the equipment diagram.
 
 Both DLLs are required. Original game DLLs stay unchanged.
+To update from 1.0.0, exit the game and replace both DLLs. Slot identifiers and saves remain unchanged.
 The release contains no game libraries, mod loader, or test harness.
 Manual installation is verified; Vortex installation is unverified.
 
@@ -68,12 +67,13 @@ See the [test report](docs/TESTING.md) for evidence and limits.
 
 **Older saves containing equipped additional slots still require the mod.**
 Restore both DLLs before loading those saves.
-Do not remove the mod merely because a game update makes its fingerprint check fail.
+If a game update causes structural checks or plugin initialization to fail, avoid loading saves containing equipped additional slots.
 Return to a compatible build or a save cleaned before the update.
 
 ## Troubleshooting
 
-- Unsupported fingerprint: this release cannot patch your build. Do not bypass the check.
+- Untested fingerprint: initialization continues with a warning. Compatibility with that Mono build is unverified.
+- Structural or initialization error: the game APIs or equipment layout may be incompatible. Keep a save backup before testing.
 - Only two slots: verify both DLL locations and inspect `BepInEx/LogOutput.log` for Four Rings messages.
 - Report reproducible problems through [GitHub Issues](https://github.com/eugeny-dementev/avalon-four-rings/issues/new/choose).
 - Share relevant log excerpts with personal paths and account information removed. Do not upload game DLLs or saves.
@@ -85,7 +85,6 @@ The original code is [MIT licensed](LICENSE). External dependencies retain their
 Game artwork and screenshots depict the game and are not grants to reuse its assets.
 
 Credits: Questline and Awaken Realms for the game; BepInEx, Harmony, and Mono.Cecil contributors for their tools.
-Better UI by Skye is a separate mod shown in the screenshots and used during testing.
 
 ### AI disclosure
 

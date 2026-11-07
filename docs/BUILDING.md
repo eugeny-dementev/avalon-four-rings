@@ -4,7 +4,7 @@ Use Windows, PowerShell 7, and the [.NET 10 SDK](https://dotnet.microsoft.com/do
 The tested SDK version is 10.0.403. The two mod assemblies target .NET Standard 2.1.
 Static checks run on .NET 10.
 
-Clone the repository. Supply your supported game installation, including BepInEx 5.
+Clone the repository. Supply your Mono game installation, including BepInEx 5.
 No game libraries are downloaded or redistributed by this project.
 The first build may download Microsoft's .NET Standard reference pack from NuGet.
 
@@ -13,7 +13,7 @@ The first build may download Microsoft's .NET Standard reference pack from NuGet
 ```
 
 Use `-DotnetPath 'D:\Tools\dotnet\dotnet.exe'` when the SDK is not on PATH.
-The build checks the game fingerprint, compiles the plugin, and runs the static patch checks.
+The build warns about untested fingerprints, compiles the plugin, and runs the static patch checks.
 Those checks also compile the patcher and confirm the plugin excludes the runtime harness.
 
 Create the normal release archive and checksums:
@@ -29,10 +29,10 @@ It always builds without the runtime harness.
 ## Release procedure
 
 1. Run the build and package commands from a clean checkout.
-2. Install the archive into a supported installation with a disposable save profile.
+2. Install the archive into a Mono installation with a disposable save profile.
 3. Check startup, four-slot placement, equip actions, and save loading.
 4. Run `./scripts/check-repository.ps1` after staging the intended public files.
-5. Commit the source and documentation. Tag the tested commit as `v1.0.0`.
+5. Commit the source and documentation. Tag the tested commit as `v1.0.1`.
 6. Publish the ZIP and `SHA256SUMS.txt` on the corresponding GitHub Release.
 7. Upload the identical ZIP to Nexus Mods.
 

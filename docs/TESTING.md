@@ -1,7 +1,10 @@
 # Verification report
 
-Tested on 7 November 2026 with the supported Mono 1.30.012 assembly and BepInEx 5.4.23.6.
+Tested on 7 November 2026 with Mono 1.30.012 and BepInEx 5.4.23.6.
 Runtime tests used disposable profiles. The original player profile was restored after testing.
+
+Version 1.0.1 allows other Mono builds but does not verify their compatibility. IL2CPP remains unsupported.
+The runtime matrix and screenshots below describe the 1.0.0 baseline. See the 1.0.1 checks at the end.
 
 ## Completed checks
 
@@ -39,7 +42,7 @@ The test rings were Lesser Health Ring, Athlete's Pride, Lesser Mana Ring, and a
 - Combat-triggered ring effects remain unverified; available rings had equip-triggered stat effects.
 - Requirement rejection for an unavailable-requirement ring remains unverified.
 - Automatic empty-slot selection and replacement behavior were checked by static inspection.
-- Other resolutions, Better UI settings, Vortex installation, other builds, and IL2CPP remain unverified or unsupported.
+- Other resolutions, Better UI settings, Vortex installation, and other Mono builds remain unverified. IL2CPP is unsupported.
 - Existing MiniMap startup exceptions occurred with and without Four Rings. Completed checks produced no new Four Rings exceptions.
 
 The release plugin excludes the runtime harness. Source for the harness is provided for reproducibility, not normal play.
@@ -67,3 +70,19 @@ These images show the archived capture setup, separately from the controlled sta
 After capture, the game was closed and the current player profile was restored.
 All 23 profile files matched the fresh backup by file name, length, and SHA-256.
 No capture progress or temporary test items were merged into the restored profile.
+
+## Version 1.0.1 checks
+
+- The plugin compiled with zero warnings and errors. All static patch checks passed.
+- A temporary copy with a different assembly identifier produced a different SHA-256 fingerprint.
+- The real startup patch entry point accepted that fixture and registered both additional slots.
+- Changed ring counts, changed rule counts, a missing Ring2 field, and partial registration were rejected.
+- Each rejection left the input assembly unchanged.
+- The normal plugin excluded the runtime harness. Both assembly metadata and plugin metadata identified version 1.0.1.
+- The packaged DLLs loaded the archived four-ring checkpoint on Mono 1.30.012.
+- All four occupied controls appeared. An additional slot opened the native chooser and displayed the Athlete's Pride tooltip.
+- No Four Rings exception appeared. The original game DLL retained its tested hash.
+- The game was closed, and all 23 original profile files were restored with matching hashes and sizes.
+
+The changed-fingerprint fixture verifies removal of the version block; it is not another released game version.
+Other Mono builds remain unverified. The complete runtime matrix was not repeated because equipment behavior did not change.

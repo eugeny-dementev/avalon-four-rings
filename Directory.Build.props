@@ -9,13 +9,13 @@
     <DebugSymbols>false</DebugSymbols>
     <UseSharedCompilation>false</UseSharedCompilation>
     <RestoreSources>https://api.nuget.org/v3/index.json</RestoreSources>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>eugeny-dementev</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/eugeny-dementev/avalon-four-rings</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <Target Name="RequireGameDirectory" BeforeTargets="ResolveReferences">
-    <Error Condition="!Exists('$(GameRoot)/Fall of Avalon_Data/Managed/TG.Main.dll')" Text="Set GameRoot to a supported local game installation. Use scripts/build.ps1 -GameDirectory." />
+    <Error Condition="!Exists('$(GameRoot)/Fall of Avalon_Data/Managed/TG.Main.dll')" Text="Set GameRoot to a local Mono game installation. Use scripts/build.ps1 -GameDirectory." />
   </Target>
 </Project>

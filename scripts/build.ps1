@@ -10,7 +10,7 @@ $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $gameRoot = (Resolve-Path -LiteralPath $GameDirectory).Path
 $gameAssembly = Join-Path $gameRoot 'Fall of Avalon_Data/Managed/TG.Main.dll'
 if ((Get-FileHash -LiteralPath $gameAssembly -Algorithm SHA256).Hash -ne '57E9FBE5659B25539FDCF1A734F0C5CDE277FEDF36EEA6FEACB237855C69EE2A') {
-    throw 'Unsupported game fingerprint. This release requires the verified 1.30.012 Mono build.'
+    Write-Warning 'Untested Mono game build. Tested on Mono 1.30.012; compilation and structural checks will determine whether this build can proceed.'
 }
 if ($IncludeHarness) {
     if (-not $TestDirectory -or -not [IO.Path]::IsPathRooted($TestDirectory)) { throw 'Harness builds require an absolute TestDirectory.' }

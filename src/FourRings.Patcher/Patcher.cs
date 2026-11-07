@@ -12,7 +12,7 @@ namespace FourRings;
 
 public static class Patcher
 {
-    public const string OriginalSha256 = "57E9FBE5659B25539FDCF1A734F0C5CDE277FEDF36EEA6FEACB237855C69EE2A";
+    public const string TestedSha256 = "57E9FBE5659B25539FDCF1A734F0C5CDE277FEDF36EEA6FEACB237855C69EE2A";
     public const string Slot3 = "FourRings_Ring3";
     public const string Slot4 = "FourRings_Ring4";
     public static IEnumerable<string> TargetDLLs => new[] { "TG.Main.dll" };
@@ -23,7 +23,8 @@ public static class Patcher
         using (var sha = SHA256.Create())
         {
             var hash = BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "");
-            if (hash != OriginalSha256) throw new InvalidOperationException("Four Rings supports only the verified Mono game build. Original DLL fingerprint differs.");
+            if (hash != TestedSha256)
+                Logger.CreateLogSource("FourRings.Patcher").LogWarning("Untested Mono game build. Four Rings was tested on Mono 1.30.012; attempting initialization with structural checks enabled.");
         }
         Apply(assembly);
         Logger.CreateLogSource("FourRings.Patcher").LogInfo("Registered four ring slots; original slots 0-18 retained, additional slots 19 and 20.");

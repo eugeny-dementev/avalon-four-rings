@@ -13,7 +13,7 @@ using UnityEngine.UI;
 
 namespace FourRings;
 
-[BepInPlugin("local.avalon.fourrings", "Four Rings", "1.0.0")]
+[BepInPlugin("local.avalon.fourrings", "Four Rings", "1.0.1")]
 [BepInDependency("Better_UI", BepInDependency.DependencyFlags.SoftDependency)]
 public sealed class Plugin : BaseUnityPlugin
 {

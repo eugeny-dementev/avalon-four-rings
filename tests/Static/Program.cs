@@ -7,7 +7,8 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 Check(args.Length == 3, "game assembly, plugin assembly, and expected harness state supplied");
-Check(Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(args[0]))) == Patcher.OriginalSha256, "supported game fingerprint");
+if (Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(args[0]))) != Patcher.TestedSha256)
+    Console.WriteLine("WARNING: untested Mono game fingerprint; running structural checks.");
 using (var plugin = AssemblyDefinition.ReadAssembly(args[1]))
 {
     Check(plugin.MainModule.Types.Any(t => t.Name == "TestHarness") == bool.Parse(args[2]), "plugin harness state matches build request");
@@ -60,7 +61,66 @@ assembly.Write(bytes);
 bytes.Position = 0;
 using var roundTrip = AssemblyDefinition.ReadAssembly(bytes);
 Check(roundTrip.MainModule.GetType(slots.FullName).Fields.Any(f => f.Name == Patcher.Slot4), "modified assembly writes and reads");
+
+// Exercise the real startup entry point against a different fingerprint without changing the installed game.
+var fixtureDirectory = Path.Combine(Path.GetTempPath(), "FourRings.Static-" + Guid.NewGuid().ToString("N"));
+Directory.CreateDirectory(fixtureDirectory);
+var managedPath = typeof(BepInEx.Paths).GetProperty("ManagedPath")!;
+var originalManagedPath = managedPath.GetValue(null);
+try
+{
+    var fixturePath = Path.Combine(fixtureDirectory, "TG.Main.dll");
+    using (var fixture = AssemblyDefinition.ReadAssembly(args[0], new ReaderParameters { AssemblyResolver = resolver }))
+    {
+        fixture.MainModule.Mvid = Guid.NewGuid();
+        fixture.Write(fixturePath);
+    }
+    Check(Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(fixturePath))) != Patcher.TestedSha256, "fixture has an untested fingerprint");
+    managedPath.SetValue(null, fixtureDirectory);
+    using var fixtureAssembly = AssemblyDefinition.ReadAssembly(fixturePath, new ReaderParameters { AssemblyResolver = resolver });
+    Patcher.Patch(fixtureAssembly);
+    Check(fixtureAssembly.MainModule.GetType(slots.FullName).Fields.Any(f => f.Name == Patcher.Slot4), "startup permits an untested fingerprint with compatible structures");
+}
+finally
+{
+    managedPath.SetValue(null, originalManagedPath);
+    Directory.Delete(fixtureDirectory, true);
+}
+
+RejectChangedStructure("ring collection count", slot =>
+{
+    var method = slot.Methods.Single(m => m.Name == ".cctor");
+    var cursor = method.Body.Instructions.Single(i => i.OpCode == OpCodes.Stsfld && ((FieldReference)i.Operand).Name == "Rings");
+    while (cursor.OpCode != OpCodes.Newarr) cursor = cursor.Previous;
+    cursor.Previous.OpCode = OpCodes.Ldc_I4;
+    cursor.Previous.Operand = 3;
+});
+RejectChangedStructure("native rule count", slot =>
+{
+    var method = slot.NestedTypes.Single(t => t.Name == "Rules").Methods.Single(m => m.Name == ".cctor");
+    var count = method.Body.Instructions.First(i => i.OpCode == OpCodes.Newarr).Previous;
+    count.OpCode = OpCodes.Ldc_I4;
+    count.Operand = 20;
+});
+RejectChangedStructure("missing Ring2 field", slot => slot.Fields.Single(f => f.Name == "Ring2").Name = "ChangedRing2");
+RejectChangedStructure("incomplete slot registration", slot =>
+    slot.Fields.Add(new FieldDefinition(Patcher.Slot3, FieldAttributes.Public | FieldAttributes.Static | FieldAttributes.InitOnly, slot)));
 Console.WriteLine("PASS: all static patch checks");
+void RejectChangedStructure(string label, Action<TypeDefinition> mutate)
+{
+    using var fixture = AssemblyDefinition.ReadAssembly(args[0], new ReaderParameters { AssemblyResolver = resolver });
+    var slot = fixture.MainModule.GetType(slots.FullName);
+    mutate(slot);
+    using var before = new MemoryStream();
+    fixture.Write(before);
+    bool rejected = false;
+    try { Patcher.Apply(fixture); }
+    catch (InvalidOperationException) { rejected = true; }
+    Check(rejected, "reject incompatible " + label);
+    using var after = new MemoryStream();
+    fixture.Write(after);
+    Check(before.ToArray().SequenceEqual(after.ToArray()), "rejection leaves assembly unchanged: " + label);
+}
 static void Check(bool condition, string label) { if (!condition) throw new Exception("FAIL: " + label); Console.WriteLine("PASS: " + label); }
 static System.Collections.Generic.Dictionary<string, int> Indexes(MethodDefinition init)
 {
