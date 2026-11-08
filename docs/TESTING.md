@@ -111,3 +111,24 @@ The final interaction checks passed after this correction.
 Physical gamepad input, locked horse armour, other resolutions, other interface configurations, and other Mono builds remain unverified.
 Combat-triggered effects and merchant transactions remain unverified.
 Storage, dropping, and cleaned-save removal retain their 1.0.0 verification; this update does not change those operations.
+
+### Packaged release and screenshots
+
+The 1.0.2 source built from a clean checkout with zero warnings and errors.
+All static checks passed, including the check that the release plugin excludes the harness.
+Archive validation confirmed the five allowed entries and their SHA-256 hashes.
+
+The disposable session saved four equipped rings and horse armour before a complete process exit.
+The packaged DLLs then loaded that checkpoint without the test harness.
+All five assignments remained visible. Maximum health, mana, and stamina remained 66, 52, and 51.
+Repeated inventory opening retained four separate ring controls and the relocated horse control.
+Native ring and horse tooltips displayed correctly. No exception appeared in the packaged session log.
+The original game assembly retained its tested SHA-256 fingerprint.
+
+Four new gameplay PNGs document this release: equipment crop, inventory overview, ring tooltip, and horse armour tooltip.
+The overview and tooltip images were resized from the captured frames. The cover is a direct crop.
+No image contains generated artwork or simulated UI.
+
+The game was closed before restoring the original profile.
+All 19 original profile files matched the backup by name, length, and SHA-256.
+No test progress was merged. The installed release DLLs match the packaged files and exclude the harness.

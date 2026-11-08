@@ -12,8 +12,8 @@ Structural checks remain enabled and reject incompatible equipment layouts. IL2C
 
 ![Four occupied ring slots in the native equipment diagram](docs/images/four-rings-cover.png)
 
-Actual gameplay capture from a disposable test profile. Inventory appearance includes separate UI customizations.
-See the [complete inventory](docs/images/inventory-overview.png) and [additional-slot tooltip](docs/images/ring-interaction.png).
+Actual 1.0.2 gameplay capture from a disposable test profile. Inventory appearance includes separate UI customizations.
+See the [complete inventory](docs/images/inventory-overview.png), [additional-slot tooltip](docs/images/ring-interaction.png), and [horse armour tooltip](docs/images/horse-interaction.png).
 
 ## Requirements
 
