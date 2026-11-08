@@ -1,10 +1,10 @@
 # Verification report
 
-Tested on 7 November 2026 with Mono 1.30.012 and BepInEx 5.4.23.6.
+Tested on 7–8 November 2026 with Mono 1.30.012 and BepInEx 5.4.23.6.
 Runtime tests used disposable profiles. The original player profile was restored after testing.
 
 Version 1.0.1 allows other Mono builds but does not verify their compatibility. IL2CPP remains unsupported.
-The runtime matrix and screenshots below describe the 1.0.0 baseline. See the 1.0.1 checks at the end.
+The initial runtime matrix below describes the 1.0.0 baseline. Later sections record checks for each update.
 
 ## Completed checks
 
@@ -86,3 +86,28 @@ No capture progress or temporary test items were merged into the restored profil
 
 The changed-fingerprint fixture verifies removal of the version block; it is not another released game version.
 Other Mono builds remain unverified. The complete runtime matrix was not repeated because equipment behavior did not change.
+
+## Version 1.0.2 checks
+
+Tests used a fresh disposable copy of the latest checkpoint, containing eight existing rings and available horse armour.
+No additional item was created for these checks.
+
+| Area | Result |
+| --- | --- |
+| Layout | Four ring controls, boots, and horse armour had separate on-screen bounds at 3840 × 2160. |
+| Horse placement | Horse armour appeared left of the lower-left ring, aligned with the boots row. |
+| Reopening | Repeated inventory opening retained one control per slot and exactly three alignment components. |
+| Native interactions | All four rings and horse armour passed chooser, confirm, cancel, equip, and unequip checks. |
+| Mouse inspection | Native ring tooltips displayed item statistics. Horse armour displayed its tooltip and equipped or unequipped from its relocated control. |
+| Navigation | Bidirectional links reached every control. Native navigation skipped horse armour when its visibility condition was disabled temporarily. |
+| Ring matrix | Three rings passed every slot and all three-ring combinations. Native bonuses returned to the baseline. |
+| Effects | All eight rings matched native Ring1 registrations and event listeners across all four slots. Unequipping restored the baseline. |
+| Selling eligibility | Native sellable inventory excluded equipped rings and included them after unequipping. |
+
+Testing exposed a missing favourite-panel reference in the native horse control.
+Version 1.0.2 supplies an inactive panel when that reference is absent, allowing native unequip to complete without an exception.
+The final interaction checks passed after this correction.
+
+Physical gamepad input, locked horse armour, other resolutions, other interface configurations, and other Mono builds remain unverified.
+Combat-triggered effects and merchant transactions remain unverified.
+Storage, dropping, and cleaned-save removal retain their 1.0.0 verification; this update does not change those operations.

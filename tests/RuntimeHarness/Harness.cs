@@ -44,6 +44,7 @@ public sealed class TestHarness : BaseUnityPlugin
     const string Confirmation = "I CONFIRM THE ACTIVE GAME PROFILE IS DISPOSABLE";
     float nextPoll;
     bool busy;
+    bool? originalHorseDlc;
     static HeroItems Inventory => Hero.Current.HeroItems;
     static Item[] Rings => Inventory.Items.Where(i => i.EquipmentType == EquipmentType.Ring).ToArray();
     void Awake()
@@ -73,6 +74,18 @@ public sealed class TestHarness : BaseUnityPlugin
             switch (command)
             {
                 case "dump": Dump(); break;
+                case "layout": LayoutTests(); break;
+                case "hide-horse":
+                    var handler = Hero.Current!.Element<HeroHorseArmorHandler>();
+                    var dlc = AccessTools.Field(typeof(HeroHorseArmorHandler), "_usingHorseArmorDlc");
+                    originalHorseDlc ??= (bool)dlc.GetValue(handler);
+                    dlc.SetValue(handler, false);
+                    Log("Reopen inventory to inspect the hidden horse control."); break;
+                case "restore-horse":
+                    Check(originalHorseDlc.HasValue, "horse visibility override exists");
+                    AccessTools.Field(typeof(HeroHorseArmorHandler), "_usingHorseArmorDlc").SetValue(Hero.Current!.Element<HeroHorseArmorHandler>(), originalHorseDlc!.Value);
+                    originalHorseDlc = null;
+                    Log("Reopen inventory to restore native horse visibility."); break;
                 case "test": busy = true; StartCoroutine(RunProtected(EquipmentTests())); break;
                 case "controller": busy = true; StartCoroutine(RunProtected(ControllerTests())); break;
                 case "inventory": busy = true; StartCoroutine(RunProtected(InventoryTests())); break;
@@ -85,7 +98,7 @@ public sealed class TestHarness : BaseUnityPlugin
                 case "four":
                     Clear();
                     var all = Rings;
-                    Check(all.Length == 4, "four rings available");
+                    Check(all.Length >= 4, "at least four rings available");
                     for (int i = 0; i < 4; i++) Equip(all[i], EquipmentSlotType.Rings[i]);
                     Dump(); break;
                 case "clean": Clear(); Dump(); break;
@@ -95,7 +108,7 @@ public sealed class TestHarness : BaseUnityPlugin
                 case "navigate": NavigationTests(); break;
                 case "verify":
                     Check(EquipmentSlotType.Rings.All(s => Inventory.EquippedItem(s) != null), "all four assignments survived restart");
-                    Check(Rings.Length == 4 && Rings.Select(i => i.ID).Distinct().Count() == 4, "four distinct rings after restart");
+                    Check(Rings.Length >= 4 && Rings.Select(i => i.ID).Distinct().Count() == Rings.Length, "inventory rings retain distinct identities after restart");
                     Dump(); break;
                 default: throw new InvalidOperationException("Unknown test command: " + command);
             }
@@ -217,16 +230,40 @@ public sealed class TestHarness : BaseUnityPlugin
         foreach (var ring in Rings) Log("RING " + ring.ID + " " + ring.DisplayName + " equipped=" + ring.IsEquipped + " slot=" + ring.EquippedInSlotOfType?.EnumName);
         foreach (var slot in EquipmentSlotType.Rings) Log("SLOT " + slot.EnumName + "=" + Inventory.EquippedItem(slot)?.ID);
         foreach (var stat in Stats()) Log("STAT " + stat.Key + "=" + stat.Value.ToString("R", CultureInfo.InvariantCulture));
-        foreach (var slot in UnityEngine.Object.FindObjectsByType<VCDefaultEquipmentSlot>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        foreach (var slot in UnityEngine.Object.FindObjectsByType<VCEquipmentSlotBase>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             var r = (RectTransform)slot.transform;
             var corners = new Vector3[4]; r.GetWorldCorners(corners);
             Log("UI " + slot.Type.EnumName + " parent=" + slot.transform.parent.name + " xy=" + r.anchoredPosition + " size=" + r.rect.size + " world=" + string.Join(";", corners.Select(c => c.ToString())));
         }
     }
+    static void LayoutTests()
+    {
+        var slots = UnityEngine.Object.FindObjectsByType<VCEquipmentSlotBase>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        var relevant = EquipmentSlotType.Rings.Concat(new[] { EquipmentSlotType.Boots, EquipmentSlotType.HorseArmor }).ToArray();
+        var bounds = relevant.ToDictionary(type => type, type =>
+        {
+            var control = slots.Single(s => s.Type == type);
+            var corners = new Vector3[4];
+            ((RectTransform)control.transform).GetWorldCorners(corners);
+            return Rect.MinMaxRect(corners.Min(c => c.x), corners.Min(c => c.y), corners.Max(c => c.x), corners.Max(c => c.y));
+        });
+        foreach (var first in relevant)
+        {
+            var rect = bounds[first];
+            Check(rect.xMin >= 0 && rect.yMin >= 0 && rect.xMax <= Screen.width && rect.yMax <= Screen.height, "control remains on screen: " + first.EnumName);
+            foreach (var second in relevant.Where(s => s != first))
+                Check(!rect.Overlaps(bounds[second]), "no overlap: " + first.EnumName + " / " + second.EnumName);
+        }
+        var horse = bounds[EquipmentSlotType.HorseArmor];
+        var ring3 = bounds[EquipmentSlotType.Rings[2]];
+        Check(horse.xMax < ring3.xMin && Math.Abs(horse.center.y - ring3.center.y) < 1, "horse control sits left of lower-left ring");
+        Check(slots.Where(s => relevant.Contains(s.Type)).Sum(s => s.GetComponents<Plugin.SlotAlignment>().Length) == 3, "exactly three alignment components in the active equipment view");
+        Log("PASS equipment layout");
+    }
     static void NavigationTests()
     {
-        var slots = UnityEngine.Object.FindObjectsByType<VCDefaultEquipmentSlot>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        var slots = UnityEngine.Object.FindObjectsByType<VCEquipmentSlotBase>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         var focus = World.Only<Focus>();
         var gameUI = World.Only<GameUI>();
         var controllerType = AccessTools.Field(typeof(RewiredHelper), "s_controllerType");
@@ -258,6 +295,19 @@ public sealed class TestHarness : BaseUnityPlugin
             destination.Handle(new UINaviAction { direction = direction == "left" ? NaviDirection.Right : NaviDirection.Left, GameUI = gameUI });
             Check(focus.Focused == boots, "controller navigation back to boots");
         }
+        var horse = slots.Single(s => s.Type == EquipmentSlotType.HorseArmor);
+        var ring3 = slots.Single(s => s.Type == EquipmentSlotType.Rings[2]);
+        Check(Plugin.GetNeighbor(ring3, "left") == horse.gameObject && Plugin.GetNeighbor(horse, "right") == ring3.gameObject, "bidirectional horse and ring navigation links");
+        focus.Select(ring3, false);
+        ring3.Handle(new UINaviAction { direction = NaviDirection.Left, GameUI = gameUI });
+        if (Hero.Current.Element<HeroHorseArmorHandler>().SlotHidden)
+            Check(focus.Focused != horse, "navigation skips hidden horse control");
+        else
+        {
+            Check(focus.Focused == horse, "controller reaches horse control");
+            horse.Handle(new UINaviAction { direction = NaviDirection.Right, GameUI = gameUI });
+            Check(focus.Focused == ring3, "controller returns from horse to third ring");
+        }
         }
         finally
         {
@@ -269,17 +319,22 @@ public sealed class TestHarness : BaseUnityPlugin
     static IEnumerator ControllerTests()
     {
         NavigationTests();
-        var controls = UnityEngine.Object.FindObjectsByType<VCDefaultEquipmentSlot>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-        foreach (var slot in EquipmentSlotType.Rings.Skip(2))
+        var controls = UnityEngine.Object.FindObjectsByType<VCEquipmentSlotBase>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        foreach (var slot in EquipmentSlotType.Rings.Concat(new[] { EquipmentSlotType.HorseArmor }))
         {
             Clear(); yield return null;
             var control = controls.Single(c => c.Type == slot);
-            var ring = Rings[0];
+            var loadouts = (LoadoutsUI)control.Target;
+            Check(!control.Locked, "test equipment control is unlocked: " + slot.EnumName);
+            Inventory.Unequip(slot, null);
+            var ring = Inventory.Items.First(i => i.EquipmentType == (slot == EquipmentSlotType.HorseArmor ? EquipmentType.HorseArmor : EquipmentType.Ring));
             control.Handle(new UIEPointTo());
-            World.Any<LoadoutsUI>().Prompts.Handle(KeyAction(KeyBindings.UI.Items.SelectItem));
+            loadouts.CurrentlyHoveredSlot.OnStartHover(control);
+            Check(loadouts.Prompts != null && ReferenceEquals(loadouts.CurrentlyHoveredSlot.Get, control), "native prompts target " + slot.EnumName);
+            loadouts.Prompts!.Handle(KeyAction(KeyBindings.UI.Items.SelectItem));
             yield return new WaitForSecondsRealtime(0.25f);
             var chooser = World.Any<EquipmentChooseUI>();
-            Check(chooser != null && chooser.EquipmentSlotType == slot, "controller opens ring chooser for " + slot.EnumName);
+            Check(chooser != null && chooser.EquipmentSlotType == slot, "controller opens equipment chooser for " + slot.EnumName);
             var list = chooser!.Element<ItemsUI>();
             var entry = World.All<ItemsListElementUI>().First(e => e.Item == ring && e.ItemsUI == list);
             entry.OnHoverStarted();
@@ -290,8 +345,11 @@ public sealed class TestHarness : BaseUnityPlugin
             World.Services.Get<GlobalKeys>().Handle(new UICancelAction { Data = new InputActionData { actionName = cancel, actionId = Rewired.ReInput.mapping.GetActionId(cancel), player = RewiredHelper.Player } });
             yield return new WaitForSecondsRealtime(0.25f);
             Check(World.Any<EquipmentChooseUI>() == null, "controller cancel closes chooser");
+            LayoutTests();
             control.Handle(new UIEPointTo());
-            World.Any<LoadoutsUI>().Prompts.Handle(KeyAction(KeyBindings.UI.Items.UnequipItem));
+            loadouts.CurrentlyHoveredSlot.OnStartHover(control);
+            Check(!loadouts.HasBeenDiscarded && loadouts.Prompts != null && ReferenceEquals(loadouts.CurrentlyHoveredSlot.Get, control), "native unequip prompt targets " + slot.EnumName);
+            loadouts.Prompts!.Handle(KeyAction(KeyBindings.UI.Items.UnequipItem));
             yield return null;
             Check(Inventory.EquippedItem(slot) == null && !ring.IsEquipped, "controller unequip clears " + slot.EnumName);
         }

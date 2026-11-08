@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.2 — 2026-11-08
+
+- Fix the overlap between the fourth ring and the native horse armour control.
+- Move horse armour left of the lower-left ring while preserving native visibility, lock state, and equipment actions.
+- Update navigation links for the relocated horse control and the fourth ring.
+- Supply the missing native horse favourite-panel reference so native unequip completes without an exception.
+- Keep all slot indexes, permanent save identifiers, structural checks, and equipment effects unchanged.
+- Add disposable-profile layout and horse armour interaction checks.
+
 ## 1.0.1 — 2026-11-07
 
 - Allow other Mono builds to attempt initialization. Replace the exact fingerprint block with an untested-build warning.

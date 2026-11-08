@@ -2,8 +2,9 @@
 
 Equip four rings in the existing equipment diagram in **Tainted Grail: The Fall of Avalon**.
 The additional controls sit below the original ring controls, beside the boots control.
+The native horse armour control sits left of the lower-left ring when the game makes it available.
 
-**Version 1.0.1 is tested on Mono 1.30.012. Other Mono builds are allowed but unverified.**
+**Version 1.0.2 is tested on Mono 1.30.012. Other Mono builds are allowed but unverified.**
 An unknown game assembly fingerprint produces a warning, not a version block.
 Structural checks remain enabled and reject incompatible equipment layouts. IL2CPP is unsupported.
 
@@ -41,7 +42,7 @@ BepInEx/plugins/FourRings/FourRings.Plugin.dll
 5. Start the game and open the equipment diagram.
 
 Both DLLs are required. Original game DLLs stay unchanged.
-To update from 1.0.0, exit the game and replace both DLLs. Slot identifiers and saves remain unchanged.
+To update from 1.0.0 or 1.0.1, exit the game and replace both DLLs. Slot identifiers and saves remain unchanged.
 The release contains no game libraries, mod loader, or test harness.
 Manual installation is verified; Vortex installation is unverified.
 
@@ -51,6 +52,7 @@ Manual installation is verified; Vortex installation is unverified.
 - Native equip, unequip, requirements, inventory restrictions, and stacking rules remain in use.
 - Automatic selection uses an empty ring slot first, then the game's original replacement behavior.
 - Mouse actions, native tooltips, and controller navigation links use the existing game controls.
+- Horse armour remains accessible beside the additional rings, with native visibility and equipment rules.
 - Slots save through the native system with permanent names `FourRings_Ring3` and `FourRings_Ring4`.
 - There is no adjustable slot count, separate equipment window, new hotkey, or live disable switch.
 

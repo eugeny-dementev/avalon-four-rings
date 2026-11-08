@@ -32,7 +32,7 @@ It always builds without the runtime harness.
 2. Install the archive into a Mono installation with a disposable save profile.
 3. Check startup, four-slot placement, equip actions, and save loading.
 4. Run `./scripts/check-repository.ps1` after staging the intended public files.
-5. Commit the source and documentation. Tag the tested commit as `v1.0.1`.
+5. Commit the source and documentation. Tag the tested commit as `v1.0.2`.
 6. Publish the ZIP and `SHA256SUMS.txt` on the corresponding GitHub Release.
 7. Upload the identical ZIP to Nexus Mods.
 

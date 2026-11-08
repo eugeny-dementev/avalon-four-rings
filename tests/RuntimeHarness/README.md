@@ -34,15 +34,18 @@ The harness consumes the command file. Run one test at a time.
 | Command | Action |
 | --- | --- |
 | `dump` | Record rings, slots, stats, and control positions |
+| `layout` | Check ring, boots, and horse control bounds, spacing, and alignment component counts |
+| `hide-horse` | Disable horse armour visibility in the disposable profile; reopen inventory afterward |
+| `restore-horse` | Restore the previous horse armour visibility flag; reopen inventory afterward |
 | `test` | Move the first three rings through all slots and three-ring combinations |
 | `clone` | Add one distinct ring instance; requires exactly three rings |
-| `four` | Equip four ring instances into four slots |
+| `four` | Equip the first four available ring instances into four slots |
 | `effects` | Compare equip effects, registrations, and selling eligibility |
 | `navigate` | Check native navigation links while equipment UI is open |
-| `controller` | Exercise native selection, confirm, cancel, and unequip events |
+| `controller` | Exercise native selection, confirm, cancel, and unequip for all four rings and unlocked horse armour |
 | `inventory` | Exercise storage transfer and dropping; reload afterward |
 | `save` | Create a native manual test save |
-| `verify` | Check four occupied slots and four distinct rings after restart |
+| `verify` | Check four occupied slots and distinct inventory ring identities after restart |
 | `clean` | Unequip all rings |
 | `load` | Load the newest native save after title initialization is complete |
 | `quit` | Request normal game exit |

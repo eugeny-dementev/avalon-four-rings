@@ -1,6 +1,7 @@
-Four Rings - Mono 1.0.1
+Four Rings - Mono 1.0.2
 
 Four active ring slots in Tainted Grail: The Fall of Avalon.
+Horse armour appears left of the lower-left ring when the game makes it available.
 Requires Windows x64 and a Mono game installation.
 Tested on Mono 1.30.012. Other Mono builds are allowed but unverified.
 Requires BepInEx 5 x64; tested with 5.4.23.6.
@@ -19,7 +20,7 @@ INSTALL
    BepInEx/plugins/FourRings/FourRings.Plugin.dll
 5. Start the game and open the equipment diagram.
 
-UPDATE FROM 1.0.0
+UPDATE FROM 1.0.0 OR 1.0.1
 Exit the game and replace both DLLs. Slot identifiers and saves remain unchanged.
 
 REMOVE
